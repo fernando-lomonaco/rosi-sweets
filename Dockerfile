@@ -1,30 +1,29 @@
-# Use uma imagem PHP oficial com Apache
 FROM php:8.2-apache
 
-# Instalar extensões necessárias
+# Instala dependências
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
-    zip unzip \
+    zip unzip git curl \
     && docker-php-ext-install pdo pdo_pgsql zip
 
-# Ativar mod_rewrite do Apache
+# Habilita o mod_rewrite para Laravel
 RUN a2enmod rewrite
 
-# Copiar o código do projeto para o container
+# Define o DocumentRoot para a pasta public
 COPY . /var/www/html
+WORKDIR /var/www/html
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf
 
-# Ajustar permissões
+# Permissões
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Instalar composer
+# Instala o Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Rodar composer install
+# Instala as dependências do Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Expor a porta 80
 EXPOSE 80
 
-# Comando para rodar o Apache no foreground
 CMD ["apache2-foreground"]
