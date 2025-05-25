@@ -15,5 +15,8 @@
     <main class="container mt-4">
         @yield('content')
     </main>
+    <footer class="footer">
+        @rosi_sweets
+    </footer>
 </body>
 </html>

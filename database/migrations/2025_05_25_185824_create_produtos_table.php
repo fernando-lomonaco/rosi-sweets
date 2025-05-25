@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('categoria');
             $table->timestamps();
         });
+        
     }
 
     public function down(): void
